@@ -32,6 +32,7 @@ Sensors sensors;
 Actuators actuators;
 // ================================================================
 // Functions Declaration:
+void Monitor();
 void BrokerKeepAlive();
 void MqttCallback(char *topic, byte *payload, unsigned int length);
 // ================================================================
@@ -54,11 +55,13 @@ void loop()
 {
   BrokerKeepAlive();
 
+  Monitor();
+
   // Publish sensor datas to MQTT:
   MQTT.publish(PT_AIR_TEMPERATURE, sensors.ReadTemperature().c_str());
-  MQTT.publish(PT_AIR_HUMIDITY, sensors.ReadWaterLevel().c_str());
+  MQTT.publish(PT_AIR_HUMIDITY, sensors.ReadAirHumidity().c_str());
   MQTT.publish(PT_WATER_LEVEL, sensors.ReadWaterLevel().c_str());  
-  MQTT.publish(PT_SOLO_HUMIDITY, sensors.ReadWaterLevel().c_str());
+  MQTT.publish(PT_SOLO_HUMIDITY, sensors.ReadSoloHumidity().c_str());
 
   delay(2000);
 
@@ -66,6 +69,31 @@ void loop()
 
 // ================================================================
 // Functions:
+void Monitor()
+{
+  Serial.println(sensors.ReadSoloHumidityInt());
+  //Solo umido
+  if (/*sensors.ReadSoloHumidityInt() > 0 &&*/ sensors.ReadSoloHumidityInt() < 2000)
+  {
+    Serial.println(" Status: Solo umido");
+    //actuators.OnOff_WaterPump("off");
+  }
+ 
+  //Solo com umidade moderada
+  if (sensors.ReadSoloHumidityInt() > 2000 && sensors.ReadSoloHumidityInt() < 3000)
+  {
+    Serial.println(" Status: Umidade moderada");
+    //actuators.OnOff_WaterPump("off");
+  }
+ 
+  //Solo seco
+  if (sensors.ReadSoloHumidityInt() > 3000 /*&& sensors.ReadSoloHumidityInt() < 1024*/)
+  {
+    Serial.println(" Status: Solo seco");
+    //actuators.OnOff_WaterPump("on");
+  }
+}
+
 void BrokerKeepAlive()
 {
   while (!WIFI.IsConnected())

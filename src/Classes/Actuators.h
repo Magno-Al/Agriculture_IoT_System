@@ -26,8 +26,8 @@ public:
     void OnOff_WaterPump(String act)
     {
         if(act == "on")
-            digitalWrite(WATERBOMB_PIN, LOW);
-        else if(act == "off")
             digitalWrite(WATERBOMB_PIN, HIGH);
+        else if(act == "off")
+            digitalWrite(WATERBOMB_PIN, LOW);
     }
 };

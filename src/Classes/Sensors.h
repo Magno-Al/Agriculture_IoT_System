@@ -93,6 +93,19 @@ public:
         return std::to_string(h);
     }
 
+    int ReadSoloHumidityInt()
+    {
+        int h = analogRead(SOLO_HUMIDITY_PIN);
+
+        if (isnan(h)) 
+        {
+            Serial.println(F("Failed to read from Solo Humidity sensor!"));
+            return -1;
+        }
+        //Serial.println(h);
+        return h;
+    }
+
     std::string ReadLuminosity()
     {
         int h = digitalRead(LDR_PIN);
